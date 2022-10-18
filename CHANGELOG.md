@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.1.0 - not yet released
+## 1.1.0 - 2022-10-18
 
 - add `:remove` method
 - add `:set_ttl` method
