@@ -25,6 +25,19 @@ function TTLCache:new(opts)
     return o
 end
 
+-- set TTL for existing items
+function TTLCache:set_ttl(new_ttl)
+    local ttl_diff = new_ttl - self.ttl
+
+    for _, item in pairs(self.items) do
+        item.ts = item.ts + ttl_diff
+    end
+
+    self.ttl = new_ttl
+
+    self:expire()
+end
+
 -- Remove expired items
 function TTLCache:expire()
     local now = self.time()
