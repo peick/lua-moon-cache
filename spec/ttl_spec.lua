@@ -70,6 +70,17 @@ describe('ttl cache', function()
         assert.is_nil(c:get(42))
     end)
 
+    it('gets removed item', function()
+        local timer = make_timer()
+        local c = TTLCache:new { ttl = 1, time = timer }
+
+        c:put(42, 1000)
+        assert.same(c:get(42), 1000)
+
+        c:remove(42)
+        assert.is_nil(c:get(42))
+    end)
+
     it('expires many items', function()
         local timer = make_timer()
         local c = TTLCache:new { ttl = 300, time = timer }

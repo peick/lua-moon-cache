@@ -40,6 +40,8 @@ function TTLCache:expire()
             return
         end
     end
+
+    self.last = nil
 end
 
 function TTLCache:put(key, value)
@@ -71,6 +73,10 @@ function TTLCache:put(key, value)
     self.last = item
 
     self:expire()
+end
+
+function TTLCache:remove(key)
+    self:put(key, nil)
 end
 
 function TTLCache:get(key)
