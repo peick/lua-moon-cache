@@ -68,6 +68,8 @@ describe('ttl cache', function()
 
         timer(5)
         assert.is_nil(c:get(42))
+
+        c:expire()
     end)
 
     it('gets removed item', function()
@@ -79,6 +81,8 @@ describe('ttl cache', function()
 
         c:remove(42)
         assert.is_nil(c:get(42))
+
+        c:expire()
     end)
 
     it('sets new ttl', function()
@@ -102,6 +106,8 @@ describe('ttl cache', function()
 
         timer(110)
         assert.same(c:get(99), 1001)
+
+        c:expire()
     end)
 
     it('expires many items', function()
@@ -121,6 +127,8 @@ describe('ttl cache', function()
         for key = 1, 100 do
             assert.is_nil(c:get(key))
         end
+
+        c:expire()
     end)
 
     it('updates', function()
@@ -137,6 +145,26 @@ describe('ttl cache', function()
 
         c:put(42, 1002)
         assert.same(c:get(42), 1002)
+
+        c:expire()
+    end)
+
+    it('updates tail', function()
+        local timer = make_timer()
+        local c = TTLCache:new { ttl = 1, time = timer }
+
+        c:put(42, 1000)
+        c:put(43, 1001)
+        c:put(44, 1002)
+        c:put(44, 999)
+
+        assert.same(c:get(44), 999)
+        timer(2)
+        c:expire()
+
+        assert.is_nil(c:get(42))
+        assert.is_nil(c:get(43))
+        assert.is_nil(c:get(44))
     end)
 
     it('updates and expires', function()
@@ -148,6 +176,8 @@ describe('ttl cache', function()
         timer(2)
 
         assert.is_nil(c:get(42))
+
+        c:expire()
     end)
 
     it('expires and updates', function()
@@ -159,6 +189,8 @@ describe('ttl cache', function()
         c:put(42, 1001)
 
         assert.same(c:get(42), 1001)
+
+        c:expire()
     end)
 
     it('updates randomly', function()

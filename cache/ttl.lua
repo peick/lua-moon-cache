@@ -17,6 +17,9 @@ function TTLCache:new(opts)
 
         -- last item
         last = nil,
+
+        -- number of objects in .items. May contain expired items.
+        size = 0,
     }
 
     setmetatable(o, self)
@@ -45,7 +48,11 @@ function TTLCache:expire()
 
     while item do
         if now >= item.ts then
+            self.size = self.size - 1
             self.first = item.next
+            if self.first then
+                self.first.prev = nil
+            end
             self.items[item.key] = nil
 
             item = item.next
@@ -58,6 +65,8 @@ function TTLCache:expire()
 end
 
 function TTLCache:put(key, value)
+    local now = self.time()
+
     -- If key is already present in items, then it moves the modified item to the tail of the linked list
     local item = self.items[key]
     if item then
@@ -70,6 +79,7 @@ function TTLCache:put(key, value)
     else
         item = { key = key }
         self.items[key] = item
+        self.size = self.size + 1
 
         if not self.first then
             self.first = item
@@ -77,9 +87,11 @@ function TTLCache:put(key, value)
     end
 
     item.value = value
-    item.ts = self.time() + self.ttl
+    item.ts = now + self.ttl
+    item.next = nil
+    item.prev = nil
 
-    if self.last then
+    if self.last and self.last ~= item then
         self.last.next = item
         item.prev = self.last
     end
