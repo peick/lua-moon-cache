@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.2.0 - not yet released
+## 1.2.0 - 2022-11-01
 
 - add `.size` attribute
 - fix a race condition
